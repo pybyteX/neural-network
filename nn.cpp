@@ -12,8 +12,8 @@ static double randD(const double min, const double max) {
 	return dist(rng);
 }
 
-ActivationLayer::ActivationLayer(std::function<Matrix2D(Matrix2D)> f, std::function<double(double)> d) : func(f), deriv(d) {}
-Matrix2D ActivationLayer::forward(const Matrix2D& input) { m_lastInput = input; return func(input); }
+ActivationLayer::ActivationLayer(std::function<Matrix2D(Matrix2D&)> f, std::function<double(double)> d) : func(f), deriv(d) {}
+Matrix2D ActivationLayer::forward(const Matrix2D& input) { m_lastInput = input; return func(m_lastInput); }
 Matrix2D ActivationLayer::backward(const Matrix2D& outputGradient, [[maybe_unused]] const double lr) {
 	Matrix2D dZ{ m_lastInput };
 
@@ -119,6 +119,21 @@ NeuralNet::NeuralNet(const int inputAmt, const int hiddenAmt, const int outputAm
 double NeuralNet::ReLU(const double x) { return std::max(0.0, x); }
 double NeuralNet::Tanh(const double x) { return std::tanh(x); }
 double NeuralNet::Sigmoid(const double x) { return 1 / (1 + std::pow(std::numbers::e, -x)); }
+
+Matrix2D NeuralNet::ApplyReLU(Matrix2D& mat) {
+	mat.apply(static_cast<double(*)(double)>(NeuralNet::ReLU));
+	return mat;
+}
+
+Matrix2D NeuralNet::ApplyTanh(Matrix2D& mat) {
+	mat.apply(static_cast<double(*)(double)>(NeuralNet::Tanh));
+	return mat;
+}
+
+Matrix2D NeuralNet::ApplySigmoid(Matrix2D& mat) {
+	mat.apply(static_cast<double(*)(double)>(NeuralNet::Sigmoid));
+	return mat;
+}
 
 double NeuralNet::DReLU(const double x) { return x > 0 ? 1 : 0; }
 double NeuralNet::DTanh(const double x) { return 1 - std::pow(std::tanh(x), 2); }
