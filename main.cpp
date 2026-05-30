@@ -10,7 +10,8 @@ int main() {
 
 	Matrix2D inputs;
 	Matrix2D outputs;
-	int j;
+
+	int j{};
 	for (int i{}; i < 1000; ++i) {
 		inputs.addRow({static_cast<double>(i) / 1000.0, static_cast<double>(j) / 1000.0});
 		outputs.addRow({std::max(i, j) / 1000.0});
@@ -18,7 +19,7 @@ int main() {
 	}
 
 	Sequential seq(
-		LinearLayer(2, 4), ActivationLayer([](Matrix2D mat) { mat.apply(NeuralNet::Tanh); return mat; }, NeuralNet::DTanh),
+		LinearLayer(2, 4), ActivationLayer(NeuralNet::ApplyTanh, NeuralNet::DTanh),
 		LinearLayer(4, 1)
 	);
 
